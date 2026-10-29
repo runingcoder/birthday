@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Achyut at Twenty-Seven</title>
+<meta name="description" content="A live lunar-birthday almanac for Achyut's 27th.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a night-sky patro (Nepali almanac). Live hero with two moons, then ledger-style sections read top to bottom. Single dark look by choice. */
+:root {
+  --night: #0c1024;
+  --night-2: #141a38;
+  --moon: #ece5d3;
+  --muted: #9ba0c4;
+  --marigold: #f3a730;
+  --sindoor: #e5533f;
+  --line: rgba(236, 229, 211, 0.14);
+  --display: "Tiro Devanagari Hindi", "Iowan Old Style", Georgia, serif;
+  --body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px) }
+body { margin: 0 }
+img { max-width: 100% }
+[hidden] { display: none !important }
+html { background: var(--night) }
+body {
+  background: var(--night);
+  color: var(--moon);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+#sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none }
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.num, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums }
+a { color: var(--marigold) }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--marigold); outline-offset: 3px }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: 1.25fr 1fr; gap: 48px; align-items: center; padding-block: 72px 56px }
+.eyebrow, .label {
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--marigold);
+}
+.age {
+  font-family: var(--display); font-weight: 400; color: var(--marigold);
+  font-size: clamp(9rem, 26vw, 17rem); line-height: 0.82; margin: 18px 0 6px;
+  text-shadow: 0 0 60px rgba(243, 167, 48, 0.25);
+}
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.1; margin: 0 0 18px; text-wrap: balance }
+.lede { color: var(--moon); max-width: 34em; margin: 0 0 24px; opacity: 0.92 }
+.ticker { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 2px }
+.ticker .num { font-size: clamp(1.6rem, 4.4vw, 2.3rem); color: var(--moon); line-height: 1.2 }
+.ticker small, .note { color: var(--muted); font-size: 14px }
+
+.moons { display: grid; grid-template-columns: 1fr 1fr; gap: 20px }
+.moons figure { margin: 0; display: grid; gap: 12px; justify-items: center; text-align: center }
+.moons canvas { width: 100%; max-width: 200px; aspect-ratio: 1; height: auto }
+.moons figcaption { font-size: 14px; color: var(--muted); line-height: 1.45 }
+.moons figcaption b { display: block; color: var(--moon); font-weight: 600; font-size: 15px }
+.moons-note { grid-column: 1 / -1; font-size: 14px; color: var(--muted); text-align: center; margin: 4px 0 0; text-wrap: balance }
+
+/* Sections */
+section { padding-block: 64px; border-top: 1px solid var(--line) }
+.head { display: grid; gap: 8px; margin-bottom: 32px; max-width: 44em }
+h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.9rem, 4.2vw, 2.8rem); line-height: 1.12; margin: 0; text-wrap: balance }
+h3 { font-family: var(--display); font-weight: 400; font-size: 1.5rem; line-height: 1.2; margin: 0 0 6px; text-wrap: balance }
+.head p { margin: 0; color: var(--muted) }
+.sub { margin-top: 48px }
+
+.ledger { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px 32px }
+.entry { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 4px; align-content: start; min-width: 0 }
+.entry .num { font-size: 1.75rem; line-height: 1.2; color: var(--moon); overflow-wrap: anywhere }
+.entry .num.hot { color: var(--marigold) }
+.entry span { color: var(--muted); font-size: 15px }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px 40px; margin-top: 40px }
+.fact { min-width: 0 }
+.fact p { margin: 0; color: var(--moon); opacity: 0.9 }
+.fact .big { font-family: var(--mono); font-size: 1.35rem; color: var(--marigold); display: block; margin-bottom: 4px }
+
+/* Distance rows */
+.motion { display: grid; gap: 0 }
+.mrow { display: grid; grid-template-columns: 1fr auto; gap: 4px 24px; padding-block: 16px; border-top: 1px solid var(--line); align-items: baseline }
+.mrow .num { font-size: clamp(1.25rem, 3.6vw, 1.9rem); text-align: right; color: var(--moon) }
+.mrow small { grid-column: 1 / -1; color: var(--muted); font-size: 14px }
+.mrow b { font-weight: 600 }
+
+/* Light track */
+.track { position: relative; height: 120px; margin: 24px 8px 8px }
+.track .rail { position: absolute; left: 0; right: 0; top: 60px; height: 1px; background: var(--line) }
+.track .lit { position: absolute; left: 0; top: 59px; height: 3px; background: linear-gradient(90deg, rgba(243,167,48,0.1), var(--marigold)); border-radius: 2px }
+.star { position: absolute; top: 0; height: 120px; transform: translateX(-50%); display: grid; justify-items: center; font-size: 13px; color: var(--muted); white-space: nowrap }
+.star i { position: absolute; top: 55px; width: 11px; height: 11px; border-radius: 50%; background: var(--moon); box-shadow: 0 0 10px rgba(236,229,211,0.6) }
+.star.up span { position: absolute; top: 16px }
+.star.down span { position: absolute; top: 78px }
+.star.you i { background: var(--marigold); box-shadow: 0 0 14px var(--marigold); width: 13px; height: 13px; top: 54px }
+.star.you span { color: var(--marigold); font-weight: 600 }
+.star.passed i { background: var(--muted); box-shadow: none }
+.axis { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin: 0 8px }
+
+/* Planets */
+.planets { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 24px }
+.planet { display: grid; gap: 2px; border-top: 1px solid var(--line); padding-top: 12px }
+.planet .num { font-size: 1.5rem }
+.planet span { color: var(--muted); font-size: 14px }
+
+/* Cube */
+.decode { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 12px }
+.seg { display: grid; gap: 6px; padding: 12px 14px; background: var(--night-2); border: 1px solid var(--line); border-radius: 6px; min-width: 0 }
+.seg .num { font-size: 1.6rem; color: var(--marigold); letter-spacing: 0.04em }
+.seg small { color: var(--muted); font-size: 13px; line-height: 1.35 }
+.seg.dim .num { color: var(--muted) }
+
+.bars { display: grid; gap: 12px; margin-top: 18px }
+.bar { display: grid; grid-template-columns: 210px 1fr; gap: 16px; align-items: center }
+.bar .name { font-size: 15px; color: var(--moon) }
+.bar .name small { display: block; color: var(--muted); font-size: 13px }
+.bar .tr { position: relative; height: 26px; min-width: 0 }
+.bar .fill { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(155, 160, 196, 0.35); border-radius: 0 3px 3px 0 }
+.bar.nr .fill { background: var(--marigold) }
+.bar .val { position: absolute; top: 50%; transform: translate(8px, -50%); font-family: var(--mono); font-size: 13.5px; white-space: nowrap; color: var(--moon) }
+.chip { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; background: var(--sindoor); color: var(--moon); margin-left: 6px }
+.bar-axis { display: grid; grid-template-columns: 210px 1fr; gap: 16px }
+.bar-axis div { position: relative; height: 18px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--muted) }
+.bar-axis span { position: absolute; top: 2px; transform: translateX(-50%) }
+
+.tablebox { overflow-x: auto; margin-top: 12px }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 15px }
+th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line) }
+th { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 400 }
+td.num, th.num { text-align: right }
+tr.star-row td { color: var(--marigold) }
+
+/* Stack list */
+.stack { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 32px }
+.srow { display: grid; grid-template-columns: 3.4em 1fr auto; gap: 12px; padding-block: 11px; border-top: 1px solid var(--line); align-items: baseline }
+.srow .yr { color: var(--muted); font-size: 14px }
+.srow .ag { color: var(--marigold); font-size: 14px }
+
+/* Milestones */
+.miles { display: grid; gap: 0 }
+.mile { display: grid; grid-template-columns: 9.5em 1fr auto; gap: 6px 20px; padding-block: 14px; border-top: 1px solid var(--line); align-items: baseline }
+.mile .when { font-size: 14px; color: var(--muted) }
+.mile .what { min-width: 0 }
+.mile .what small { display: block; color: var(--muted); font-size: 14px }
+.pill { font-family: var(--mono); font-size: 12px; padding: 2px 9px; border-radius: 99px; border: 1px solid var(--marigold); color: var(--marigold); white-space: nowrap }
+.pill.done { border-color: var(--line); color: var(--muted) }
+
+.mates { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 10px; color: var(--muted) }
+.mates b { color: var(--moon); font-weight: 500 }
+
+footer { border-top: 1px solid var(--line); padding-block: 72px 96px; text-align: center }
+footer .wish { font-family: var(--display); font-size: clamp(2rem, 6vw, 3.6rem); line-height: 1.25; color: var(--marigold); margin: 0 0 12px; text-wrap: balance }
+footer p { color: var(--muted); font-size: 14px; margin: 6px auto; max-width: 40em }
+
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; gap: 40px; padding-block: 40px 40px }
+  .bar, .bar-axis { grid-template-columns: 1fr; gap: 6px }
+  .bar-axis > :first-child { display: none }
+  .mile { grid-template-columns: 1fr auto }
+  .mile .when { grid-column: 1 / -1 }
+  section { padding-block: 48px }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important } }
+</style>
+</head>
+<body>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Kartik Krishna Chaturthi · Kartik 2083 BS · Bihibar</div>
+    <div class="age" aria-label="27">२७</div>
+    <h1>Happy birthday, Achyut.</h1>
+    <p class="lede">You were born on Wednesday, 27 October 1999, a few nights after Kojagrat Purnima. Nepal keeps birthdays by the moon, and this year your tithi, Kartik Krishna Chaturthi, came back on Thursday, 29 October 2026. So today is the one that counts.</p>
+    <div class="ticker">
+      <span class="num" data-k="seconds">852,000,000</span>
+      <small>seconds alive, counting live from midnight in Kathmandu</small>
+    </div>
+  </div>
+  <div class="moons">
+    <figure>
+      <canvas id="moon-birth" width="200" height="200" role="img" aria-label="Moon phase on 27 October 1999"></canvas>
+      <figcaption><b>The night you arrived</b>27 Oct 1999 · <span data-k="litBirth">95%</span> lit, waning</figcaption>
+    </figure>
+    <figure>
+      <canvas id="moon-now" width="200" height="200" role="img" aria-label="Moon phase tonight"></canvas>
+      <figcaption><b>Tonight</b><span data-k="nowDate">29 Oct 2026</span> · <span data-k="litNow">85%</span> lit, waning</figcaption>
+    </figure>
+    <p class="moons-note">Both nights are the fourth day of the waning moon after Kojagrat Purnima. The solar calendar drifted two days. The moon kept its place.</p>
+  </div>
+</header>
+
+<section>
+  <div class="head">
+    <div class="label">The clock</div>
+    <h2><span data-k="daysWord">9,864</span> days and counting</h2>
+    <p>Everything below ticks while you read it.</p>
+  </div>
+  <div class="ledger">
+    <div class="entry"><div class="num hot" data-k="days">9,864</div><span>days on Earth</span></div>
+    <div class="entry"><div class="num" data-k="hours">236,736</div><span>hours</span></div>
+    <div class="entry"><div class="num" data-k="beats">1,022,000,000</div><span>heartbeats, at 72 per minute</span></div>
+    <div class="entry"><div class="num" data-k="breaths">213,000,000</div><span>breaths, at 15 per minute</span></div>
+    <div class="entry"><div class="num" data-k="sleep">9.0</div><span>years asleep, at 8 hours a night</span></div>
+    <div class="entry"><div class="num" data-k="blinks">142,000,000</div><span>blinks while awake</span></div>
+    <div class="entry"><div class="num hot" data-k="moons">334</div><span>full moons over your head</span></div>
+    <div class="entry"><div class="num" data-k="weekdays">1,409</div><span>Wednesdays, the weekday you were born on</span></div>
+  </div>
+  <p class="note" style="margin-top:24px">Body rates are adult resting averages. Children breathe and beat faster, so the real totals are a bit higher. Your heart crossed one billion beats around <span data-k="billionBeats">March 2026</span>.</p>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">The distance</div>
+    <h2>You have never once sat still</h2>
+    <p>Three motions stacked on top of each other, measured since you were born.</p>
+  </div>
+  <div class="motion">
+    <div class="mrow"><b>Spinning with the Earth</b><span class="num" data-k="spin">351,000,000 km</span><small>0.41 km/s at Kathmandu's latitude (27.7° N)</small></div>
+    <div class="mrow"><b>Orbiting the Sun</b><span class="num" data-k="orbit">25,400,000,000 km</span><small>29.78 km/s. That is <span data-k="moonTrips">66,000</span> trips to the Moon, or 27 laps of a 940-million-km track.</small></div>
+    <div class="mrow"><b>Circling the Milky Way, with the Sun</b><span class="num" data-k="galaxy">196,000,000,000 km</span><small>About 230 km/s. One full lap takes the Sun around 230 million years.</small></div>
+  </div>
+
+  <div class="sub">
+    <h3>The light from your first night</h3>
+    <p class="note" style="margin:0 0 4px;max-width:40em">Light that left Earth when you were born is now <span data-k="ly">27.0</span> light-years out. It passed Vega in late 2024. Pollux is next, in 2033.</p>
+    <div class="track" id="track">
+      <div class="rail"></div>
+      <div class="lit" id="lit"></div>
+    </div>
+    <div class="axis mono"><span>Earth</span><span>10 ly</span><span>20 ly</span><span>30 ly</span><span>40 ly</span></div>
+  </div>
+
+  <div class="sub">
+    <h3>Your age on other planets</h3>
+    <div class="planets" id="planets"></div>
+    <p class="note" style="margin-top:18px">You have not finished one Saturn year yet. Your first Saturn return arrives in <span data-k="saturnDate">April 2029</span>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">WCA · 2016KAYA01</div>
+    <h2>Nepal's multi-blind record holder</h2>
+    <p>From 2016 to 2020 you competed in eight official competitions. Every one of your five national records was set blindfolded.</p>
+  </div>
+  <div class="ledger">
+    <div class="entry"><div class="num hot">5</div><span>national records, all blindfolded</span></div>
+    <div class="entry"><div class="num">10</div><span>medals: 5 gold, 4 silver, 1 bronze</span></div>
+    <div class="entry"><div class="num">189</div><span>official solves</span></div>
+    <div class="entry"><div class="num">8</div><span>competitions, Nepal Open 2016 to Bhanu Bhakta Cube Open 2020</span></div>
+  </div>
+
+  <div class="sub">
+    <h3>Reading your record the way the database stores it</h3>
+    <p class="note" style="margin:0 0 8px;max-width:42em">The WCA saves multi-blind results as one integer. Yours from Nepali Nationals 2019 is <span class="mono" style="color:var(--moon)">910284901</span>. Split it up and it says everything:</p>
+    <div class="decode">
+      <div class="seg dim"><span class="num">0</span><small>format flag</small></div>
+      <div class="seg"><span class="num">91</span><small>99 − 91 = 8 points</small></div>
+      <div class="seg"><span class="num">02849</span><small>2,849 s = 47:29</small></div>
+      <div class="seg"><span class="num">01</span><small>1 cube missed</small></div>
+    </div>
+    <p style="margin:0;max-width:42em">8 points plus 1 miss means <b>9 of 10 cubes solved blind in 47:29</b>. Seven years later, it is still ranked #1 in Nepal. It beat your own previous record of 5/7 in 49:02 from Nepal Open 2018.</p>
+  </div>
+
+  <div class="sub">
+    <h3>3x3 blindfolded, every competition you entered it</h3>
+    <p class="note" style="margin:0;max-width:42em">Best single at each. Highlighted bars set a national record. Your 1:47.32 still ranks #2 in Nepal.</p>
+    <div class="bars" id="bars"></div>
+  </div>
+
+  <div class="sub">
+    <h3>Personal records</h3>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Event</th><th class="num">Single</th><th class="num">Average</th><th class="num">Nepal rank</th></tr></thead>
+        <tbody>
+          <tr class="star-row"><td>3x3 multi-blind</td><td class="num">9/10 47:29</td><td class="num">–</td><td class="num">#1</td></tr>
+          <tr class="star-row"><td>3x3 blindfolded</td><td class="num">1:47.32</td><td class="num">–</td><td class="num">#2</td></tr>
+          <tr><td>4x4</td><td class="num">44.78</td><td class="num">53.32</td><td class="num">#19</td></tr>
+          <tr><td>5x5</td><td class="num">2:13.71</td><td class="num">2:29.06</td><td class="num">#23</td></tr>
+          <tr><td>2x2</td><td class="num">4.13</td><td class="num">7.55</td><td class="num">#64</td></tr>
+          <tr><td>Skewb</td><td class="num">10.92</td><td class="num">21.19</td><td class="num">#66</td></tr>
+          <tr><td>Pyraminx</td><td class="num">8.79</td><td class="num">12.61</td><td class="num">#75</td></tr>
+          <tr><td>3x3 one-handed</td><td class="num">38.66</td><td class="num">45.77</td><td class="num">#91</td></tr>
+          <tr><td>3x3</td><td class="num">15.52</td><td class="num">16.78</td><td class="num">#113</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><span class="big">10.8×</span><p>Your 2x2 single (4.13 s, Cube Jatra 2017) is 10.8 times faster than your 4x4 single (44.78 s, Nepal Open 2017).</p></div>
+    <div class="fact"><span class="big">4.13 in a 9.10 round</span><p>That 2x2 record came in a round you averaged 9.10. One good scramble, kept forever.</p></div>
+    <div class="fact"><span class="big">1:44.59 → 44.78</span><p>Your 4x4 single at your first competition, Nepal Open 2016, against your best at Nepal Open 2017. More than a minute gone.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">Backend</div>
+    <h2>Older than almost your whole stack</h2>
+    <p>Senior Backend Engineer at 27. Most of the tools you work with every day showed up after you did.</p>
+  </div>
+  <div class="stack" id="stack"></div>
+  <p class="note" style="margin-top:18px">Already around when you arrived: Linux (1991), Python (1991), Java (1996), PostgreSQL (1996), Google (13 months old).</p>
+  <div class="facts">
+    <div class="fact"><span class="big">940,961,700</span><p>The Unix timestamp at midnight Kathmandu time on the day you were born. Your age in seconds is just today's timestamp minus this.</p></div>
+    <div class="fact"><span class="big">38</span><p>Your age on 19 January 2038, when signed 32-bit Unix time overflows. Senior enough to be the one they call.</p></div>
+    <div class="fact"><span class="big">360 hours</span><p>Working from home skips a 1.5-hour daily commute. Over about 240 working days, that returns 15 full days a year.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">Long jump</div>
+    <h2>5.72 metres, five-time district champion</h2>
+    <p>And now the slower, smarter work of rehab.</p>
+  </div>
+  <div class="ledger">
+    <div class="entry"><div class="num hot">5.72 m</div><span>personal best</span></div>
+    <div class="entry"><div class="num">5×</div><span>district champion</span></div>
+    <div class="entry"><div class="num">64%</div><span>of Mike Powell's world record, 8.95 m (1991)</span></div>
+    <div class="entry"><div class="num">~100</div><span>3x3 cubes (57 mm each) laid end to end</span></div>
+  </div>
+  <div class="facts">
+    <div class="fact"><span class="big">18–23°</span><p>The take-off angle of good long jumpers. A textbook says 45° flies farthest, but a runner can't turn that much speed upward in one step, so the best jumps trade angle for speed.</p></div>
+    <div class="fact"><span class="big">~0.12 s</span><p>How long the take-off foot stays on the board. In that instant the leg absorbs several times body weight and redirects it into flight.</p></div>
+    <div class="fact"><span class="big">~72 hours</span><p>How long collagen synthesis stays raised in a tendon after a loading session. It's why tendon rehab spaces heavy days 48 to 72 hours apart. Tendons improve in months, not weeks.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">Reading</div>
+    <h2>Ten novels a year</h2>
+    <p>Fiction now, the self-help shelf retired.</p>
+  </div>
+  <div class="facts" style="margin-top:0">
+    <div class="fact"><span class="big">~3,000 pages</span><p>Ten novels at around 300 pages each, every year.</p></div>
+    <div class="fact"><span class="big">2×</span><p>Roughly double the median American adult, who reads about five books a year, according to Pew Research.</p></div>
+    <div class="fact"><span class="big">~530</span><p>Novels still ahead of you if you keep this pace to 80.</p></div>
+  </div>
+  <div class="sub">
+    <h3>Writers who share your birthday</h3>
+    <p class="note" style="margin:0">Two of them are on any good fiction shelf. 27 October also belongs to:</p>
+    <div class="mates">
+      <span><b>Sylvia Plath</b> 1932</span>
+      <span><b>Dylan Thomas</b> 1914</span>
+      <span><b>Kumar Sangakkara</b> 1977</span>
+      <span><b>John Cleese</b> 1939</span>
+      <span><b>Roy Lichtenstein</b> 1923</span>
+      <span><b>Theodore Roosevelt</b> 1858</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">Outside the window</div>
+    <h2>The road that will not finish</h2>
+    <p>Three years behind schedule, right outside your door.</p>
+  </div>
+  <div class="facts" style="margin-top:0">
+    <div class="fact"><span class="big">22.9 million</span><p>Three years of delay, measured in your 4.13-second 2x2 record.</p></div>
+    <div class="fact"><span class="big">~30× thinner</span><p>PM2.5 dust is 2.5 micrometres or smaller, about thirty times thinner than a human hair. Small enough to get deep into the lungs.</p></div>
+    <div class="fact"><span class="big">99.97%</span><p>What a true HEPA filter catches at 0.3 micrometres, the hardest particle size to trap. Bigger and smaller particles are caught even more reliably.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">1999</div>
+    <h2>The world you arrived in</h2>
+  </div>
+  <div class="facts" style="margin-top:0">
+    <div class="fact"><span class="big">6 billion</span><p>The UN marked the world's six-billionth person on 12 October 1999, fifteen days before you. Today there are about 8.3 billion of us.</p></div>
+    <div class="fact"><span class="big">Kingdom of Nepal</span><p>You were born under a king. Nepal became a republic on 28 May 2008, when you were 8. The country had about 23 million people then; the 2021 census counted 29.2 million.</p></div>
+    <div class="fact"><span class="big">66 days to Y2K</span><p>The world was patching two-digit years. The euro was ten months old, The Matrix was in its first year, and Google was a 13-month-old startup.</p></div>
+    <div class="fact"><span class="big">27 Oct 1904</span><p>On your birthday 95 years before you, the New York City Subway opened its first line.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="head">
+    <div class="label">Ahead</div>
+    <h2>Milestones on your clock</h2>
+    <p>Dates in Kathmandu time, counted from the day you were born.</p>
+  </div>
+  <div class="miles" id="miles"></div>
+</section>
+
+<footer>
+  <p class="wish">जन्मदिनको हार्दिक शुभकामना, अच्युत</p>
+  <p>Happy lunar birthday. Here's to the next 334 full moons.</p>
+  <p>Cubing results from the World Cube Association public API (2016KAYA01), fetched 29 October 2026. Body and space figures use standard averages.</p>
+</footer>
+
+</div>
+
+<script>
+(() => {
+  const DAY = 864e5;
+  const YEAR = 365.25 * DAY;
+  const BIRTH = Date.UTC(1999, 9, 26, 18, 15); // 27 Oct 1999 00:00 NPT (UTC+5:45)
+  const SYNODIC = 29.530588853;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const fmt = (n, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const ktm = (t, opts) => new Date(t).toLocaleDateString("en-GB", { timeZone: "Asia/Kathmandu", ...opts });
+  const set = (k, v) => document.querySelectorAll(`[data-k="${k}"]`).forEach(el => { el.textContent = v });
+
+  // Moon
+  // Phase as 0..1 (0 new, 0.5 full), from Meeus' low-precision phase angle
+  const phase = t => {
+    const rad = Math.PI / 180;
+    const T = (t - Date.UTC(2000, 0, 1, 12)) / DAY / 36525;
+    const D = ((297.8501921 + 445267.1114034 * T) % 360 + 360) % 360;
+    const M = (357.5291092 + 35999.0502909 * T) * rad;
+    const Mp = (134.9633964 + 477198.8675055 * T) * rad;
+    const i = 180 - D - 6.289 * Math.sin(Mp) + 2.1 * Math.sin(M) - 1.274 * Math.sin(2 * D * rad - Mp)
+      - 0.658 * Math.sin(2 * D * rad) - 0.214 * Math.sin(2 * Mp) - 0.11 * Math.sin(D * rad);
+    const E = 180 - Math.abs(((i + 180) % 360 + 360) % 360 - 180); // true elongation, 0..180
+    return D < 180 ? E / 360 : 1 - E / 360;
+  };
+  const lit = p => (1 - Math.cos(2 * Math.PI * p)) / 2;
+
+  function drawMoon(canvas, t) {
+    const dpr = window.devicePixelRatio || 1;
+    const size = 200;
+    canvas.width = size * dpr; canvas.height = size * dpr;
+    const c = canvas.getContext("2d");
+    c.scale(dpr, dpr);
+    const cx = size / 2, cy = size / 2, r = size * 0.42;
+    const p = phase(t);
+    const waxing = p < 0.5;
+    const k = Math.cos(2 * Math.PI * p);
+
+    const glow = c.createRadialGradient(cx, cy, r * 0.8, cx, cy, r * 1.25);
+    glow.addColorStop(0, "rgba(243,167,48,0.18)");
+    glow.addColorStop(1, "rgba(243,167,48,0)");
+    c.fillStyle = glow; c.beginPath(); c.arc(cx, cy, r * 1.25, 0, Math.PI * 2); c.fill();
+
+    c.fillStyle = "#1c2245"; c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
+
+    const surface = c.createRadialGradient(cx - r * 0.3, cy - r * 0.3, r * 0.1, cx, cy, r);
+    surface.addColorStop(0, "#fbf3df"); surface.addColorStop(1, "#d9cdb0");
+
+    c.save();
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.clip();
+    c.fillStyle = surface;
+    c.beginPath();
+    if (waxing) c.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2);
+    else c.arc(cx, cy, r, Math.PI / 2, Math.PI * 1.5);
+    c.fill();
+    c.fillStyle = k < 0 ? surface : "#1c2245";
+    c.beginPath(); c.ellipse(cx, cy, Math.abs(k) * r + 0.5, r, 0, 0, Math.PI * 2); c.fill();
+    // a few maria for texture
+    c.fillStyle = "rgba(120,110,90,0.16)";
+    [[-0.25, -0.2, 0.22], [0.15, -0.3, 0.14], [0.2, 0.15, 0.2], [-0.1, 0.35, 0.12]].forEach(([x, y, s]) => {
+      c.beginPath(); c.arc(cx + x * r, cy + y * r, s * r, 0, Math.PI * 2); c.fill();
+    });
+    c.restore();
+  }
+
+  // Stars
+  const sky = document.getElementById("sky");
+  const sc = sky.getContext("2d");
+  let stars = [];
+  function sizeSky() {
+    const dpr = window.devicePixelRatio || 1;
+    sky.width = innerWidth * dpr; sky.height = innerHeight * dpr;
+    sc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(innerWidth * innerHeight / 5200);
+    stars = Array.from({ length: n }, () => ({
+      x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+      r: Math.random() * 1.1 + 0.2, a: Math.random() * 0.6 + 0.2, s: Math.random() * 0.0015 + 0.0004, o: Math.random() * 6.28
+    }));
+  }
+  function drawSky(time) {
+    sc.clearRect(0, 0, innerWidth, innerHeight);
+    for (const st of stars) {
+      const tw = reduce ? 1 : 0.65 + 0.35 * Math.sin(time * st.s + st.o);
+      sc.globalAlpha = st.a * tw;
+      sc.fillStyle = "#ece5d3";
+      sc.beginPath(); sc.arc(st.x, st.y, st.r, 0, Math.PI * 2); sc.fill();
+    }
+    sc.globalAlpha = 1;
+  }
+
+  // Light-echo track
+  const MAX_LY = 40;
+  const lyNow = (Date.now() - BIRTH) / YEAR;
+  const track = document.getElementById("track");
+  [["Sirius", 8.6, "up"], ["Altair", 16.7, "up"], ["Vega", 25.0, "up"], ["Pollux", 33.8, "up"], ["Arcturus", 36.7, "down"]].forEach(([name, d, pos]) => {
+    const el = document.createElement("div");
+    el.className = `star ${pos}${d < lyNow ? " passed" : ""}`;
+    el.style.left = `${d / MAX_LY * 100}%`;
+    el.innerHTML = `<span>${name} · ${d} ly</span><i></i>`;
+    track.appendChild(el);
+  });
+  const you = document.createElement("div");
+  you.className = "star down you";
+  you.style.left = `${lyNow / MAX_LY * 100}%`;
+  you.innerHTML = `<span>Your birth light</span><i></i>`;
+  track.appendChild(you);
+  document.getElementById("lit").style.width = `${lyNow / MAX_LY * 100}%`;
+
+  // Planets
+  const PLANETS = [["Mercury", 0.2408467], ["Venus", 0.61519726], ["Earth", 1], ["Mars", 1.8808158], ["Jupiter", 11.862615], ["Saturn", 29.447498]];
+  document.getElementById("planets").innerHTML = PLANETS.map(([n]) =>
+    `<div class="planet"><span>${n}</span><span class="num" data-k="pl-${n}">0</span></div>`).join("");
+
+  // 3BLD bars
+  const BLD = [
+    ["Nepal Open", 2017, 192.04, true],
+    ["Cube Mahotsav", 2018, 131.73, true],
+    ["Nepal Open", 2018, 107.32, true],
+    ["Nepali Nationals", 2019, 133.47, false],
+    ["Bhanu Bhakta Cube Open", 2020, 108.90, false],
+  ];
+  const MAX_S = 240;
+  const clock = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(2).padStart(5, "0")}`;
+  document.getElementById("bars").innerHTML = BLD.map(([n, y, s, nr]) => `
+    <div class="bar${nr ? " nr" : ""}">
+      <div class="name">${n}<small>${y}</small></div>
+      <div class="tr"><div class="fill" style="width:${s / MAX_S * 100}%"></div>
+        <span class="val" style="left:${s / MAX_S * 100}%">${clock(s)}${nr ? '<span class="chip">NR</span>' : ""}</span></div>
+    </div>`).join("") + `
+    <div class="bar-axis"><span></span><div>${[0, 60, 120, 180, 240].map(s =>
+      `<span style="left:${s / MAX_S * 100}%">${s / 60}:00</span>`).join("")}</div></div>`;
+
+  // Stack
+  const STACK = [
+    ["Amazon S3", "2006-03-14"], ["Git", "2005-04-07"], ["GitHub", "2008-04-10"], ["Stack Overflow", "2008-09-15"],
+    ["Python 3", "2008-12-03"], ["Redis", "2009-05-10"], ["Node.js", "2009-05-27"], ["Go", "2009-11-10"],
+    ["Docker", "2013-03-20"], ["Kubernetes", "2014-06-07"], ["Rust 1.0", "2015-05-15"], ["ChatGPT", "2022-11-30"],
+  ].sort((a, b) => a[1].localeCompare(b[1]));
+  const ageAt = iso => {
+    const [y, m, d] = iso.split("-").map(Number);
+    return y - 1999 - (m < 10 || (m === 10 && d < 27) ? 1 : 0);
+  };
+  document.getElementById("stack").innerHTML = STACK.map(([n, iso]) =>
+    `<div class="srow"><span class="yr mono">${iso.slice(0, 4)}</span><span>${n}</span><span class="ag mono">age ${ageAt(iso)}</span></div>`).join("");
+
+  // Milestones
+  const MILES = [
+    ["Light from your birth passes Vega", BIRTH + 25.04 * YEAR, "25.04 light-years away"],
+    ["One billion heartbeats", BIRTH + 1e9 / 72 * 60e3, "at a steady 72 beats a minute"],
+    ["10,000 days old", BIRTH + 10000 * DAY, "It lands on Pi Day."],
+    ["Your first Saturn return", BIRTH + 29.447498 * YEAR, "Saturn back where it was the night you were born"],
+    ["30th solar birthday", Date.UTC(2029, 9, 26, 18, 15), "Your lunar one will be a different date"],
+    ["One billion seconds old", BIRTH + 1e12, "31.7 years in"],
+    ["Signed 32-bit Unix time overflows", Date.UTC(2038, 0, 19, 3, 14, 7), "03:14:07 UTC, 19 January 2038"],
+    ["Halley's Comet returns", Date.UTC(2061, 6, 28), "Perihelion, 28 July 2061"],
+  ].sort((a, b) => a[1] - b[1]);
+
+  function renderMiles(now) {
+    document.getElementById("miles").innerHTML = MILES.map(([what, t, note]) => {
+      const days = Math.round((t - now) / DAY);
+      const age = Math.floor((t - BIRTH) / YEAR);
+      const done = days < 0;
+      const pill = done ? `${fmt(-days)} days ago` : days === 0 ? "today" : `in ${fmt(days)} days`;
+      return `<div class="mile"><span class="when mono">${ktm(t, { day: "numeric", month: "short", year: "numeric" })}</span>
+        <div class="what">${what}<small>${note} · age ${age}</small></div>
+        <span class="pill${done ? " done" : ""}">${pill}</span></div>`;
+    }).join("");
+  }
+
+  // Static-ish values
+  const now0 = Date.now();
+  drawMoon(document.getElementById("moon-birth"), BIRTH);
+  drawMoon(document.getElementById("moon-now"), now0);
+  set("litBirth", `${Math.round(lit(phase(BIRTH)) * 100)}%`);
+  set("litNow", `${Math.round(lit(phase(now0)) * 100)}%`);
+  set("nowDate", ktm(now0, { day: "numeric", month: "short", year: "numeric" }));
+  set("billionBeats", ktm(BIRTH + 1e9 / 72 * 60e3, { month: "long", year: "numeric" }));
+  set("saturnDate", ktm(BIRTH + 29.447498 * YEAR, { month: "long", year: "numeric" }));
+  renderMiles(now0);
+
+  // Live values
+  function tick() {
+    const now = Date.now();
+    const s = (now - BIRTH) / 1000;
+    const days = s / 86400;
+    const min = s / 60;
+    set("seconds", fmt(Math.floor(s)));
+    set("days", fmt(Math.floor(days)));
+    set("daysWord", fmt(Math.floor(days)));
+    set("hours", fmt(Math.floor(s / 3600)));
+    set("beats", fmt(Math.floor(min * 72)));
+    set("breaths", fmt(Math.floor(min * 15)));
+    set("blinks", fmt(Math.floor(min * (2 / 3) * 15)));
+    set("sleep", fmt(days / 3 / 365.25, 2));
+    set("moons", fmt(Math.floor(days / SYNODIC)));
+    set("weekdays", fmt(Math.floor(days / 7) + 1));
+    set("spin", `${fmt(Math.floor(s * 0.4118))} km`);
+    set("orbit", `${fmt(Math.floor(s * 29.78))} km`);
+    set("galaxy", `${fmt(Math.floor(s * 230))} km`);
+    set("moonTrips", fmt(Math.floor(s * 29.78 / 384400)));
+    set("ly", fmt(days / 365.25, 4));
+    for (const [n, period] of PLANETS) set(`pl-${n}`, fmt(days / 365.25 / period, n === "Saturn" || n === "Jupiter" ? 4 : 3));
+  }
+  tick();
+  setInterval(tick, reduce ? 1000 : 100);
+
+  sizeSky();
+  if (reduce) drawSky(0);
+  else { const loop = t => { drawSky(t); requestAnimationFrame(loop) }; requestAnimationFrame(loop) }
+  addEventListener("resize", () => { sizeSky(); if (reduce) drawSky(0) });
+})();
+</script>
+</body>
+</html>
